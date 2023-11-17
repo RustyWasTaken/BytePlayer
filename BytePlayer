@@ -1,0 +1,87 @@
+-- 888888b.            888            8888888b.  888                                    
+-- 888  "88b           888            888   Y88b 888                                    
+-- 888  .88P           888            888    888 888                                    
+-- 8888888K.  888  888 888888 .d88b.  888   d88P 888  8888b.  888  888  .d88b.  888d888 
+-- 888  "Y88b 888  888 888   d8P  Y8b 8888888P"  888     "88b 888  888 d8P  Y8b 888P"   
+-- 888    888 888  888 888   88888888 888        888 .d888888 888  888 88888888 888     
+-- 888   d88P Y88b 888 Y88b. Y8b.     888        888 888  888 Y88b 888 Y8b.     888     
+-- 8888888P"   "Y88888  "Y888 "Y8888  888        888 "Y888888  "Y88888  "Y8888  888     
+--                 888                                             888                  
+--            Y8b d88P                                        Y8b d88P                  
+--            "Y88P"                                          "Y88P"                   
+-- By ImBadAtNamesLol
+
+local s = peripheral.find("speaker")
+local current = ""
+local song = ""
+local artist = ""
+local dfpwm = require("cc.audio.dfpwm")
+local config = require("playlist")
+local playlist = config.playlist
+
+function music()
+    while true do
+        for _, v in pairs(playlist) do
+            song = v["title"]
+            artist = v["artist"]
+            current = v["url"]
+            local data = http.get(current, nil, true)
+            
+            if data then
+                local decoder = dfpwm.make_decoder()
+                while true do
+                    local chunk = data.read(16 * 1024)
+                    if not chunk then
+                        break
+                    end
+
+                    local buffer = decoder(chunk)
+                    while not s.playAudio(buffer) do
+                        os.pullEvent("speaker_audio_empty")
+                    end
+                end
+                current = ""
+            end
+        end
+        sleep()
+    end
+end
+
+function display()
+    term.setTextColor(config.textcolor)
+    term.setBackgroundColor(config.backgroundcolor)
+    term.setCursorBlink(false)
+
+    local function centerText(y, text)
+        local x = math.floor((term.getSize() - string.len(text)) / 2) + 1
+        term.setCursorPos(x, y)
+        term.write(text)
+    end
+
+    local function centerTextVertically(y, text)
+        local screenHeight = term.getSize()
+        local textHeight = #text:split("\n")
+        local centerY = math.floor((screenHeight - textHeight) / 2) + 1
+
+        for i, line in ipairs(text:split("\n")) do
+            centerText(centerY + i - 1, line)
+        end
+    end
+
+    while true do
+        term.clear()
+        centerText(1, "BytePlayer Alpha 1.0")
+        centerTextVertically(math.floor(term.getSize() / 2) + 1, "Now playing:")
+        
+        if current then
+            centerTextVertically(math.floor(term.getSize() / 2) + 2, song)
+            centerTextVertically(math.floor(term.getSize() / 2) + 3, artist)
+        else
+            centerTextVertically(math.floor(term.getSize() / 2) + 2, "Nothing is playing")
+        end
+
+        sleep()
+    end
+end
+
+parallel.waitForAll(music, display)
