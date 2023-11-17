@@ -25,9 +25,11 @@ function music()
             song = v["title"]
             artist = v["artist"]
             current = v["url"]
-            local data = http.get(current, nil, true)
             
-            if data then
+            -- Wrap the http.get call in pcall to catch any errors
+            local success, data = pcall(http.get, current, nil, true)
+            
+            if success and data then
                 local decoder = dfpwm.make_decoder()
                 while true do
                     local chunk = data.read(16 * 1024)
@@ -40,7 +42,10 @@ function music()
                         os.pullEvent("speaker_audio_empty")
                     end
                 end
+                data.close()  -- Close the http connection
                 current = ""
+            else
+                print("Failed to download: " .. song .. " by " .. artist)
             end
         end
         sleep()
