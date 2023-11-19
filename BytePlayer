@@ -71,6 +71,9 @@ local filename = read()
 -- Load the playlist based on the provided file name
 playlist = loadPlaylist(filename)
 
+-- Get screen size
+local screenWidth, screenHeight = term.getSize()
+
 -- Function to play the selected song
 function playSelectedSong(selectedIndex)
     local selected = playlist[selectedIndex]
@@ -147,8 +150,6 @@ function display()
     term.setTextColor(colors.gray)  -- Text color
     term.setBackgroundColor(colors.lightGray)  -- Background color
     term.setCursorBlink(false)
-
-    local screenWidth, screenHeight = term.getSize()
 
     while true do
         term.clear()
