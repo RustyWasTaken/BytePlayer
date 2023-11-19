@@ -149,10 +149,10 @@ function display()
     term.setBackgroundColor(colors.lightGray)  -- Background color
     term.setCursorBlink(false)
 
-    local screenWidth, screenHeight = term.getSize()
-
     while true do
         term.clear()
+
+        local screenWidth, screenHeight = term.getSize()  -- Get screen size dynamically
 
         local xPosition = screenWidth - string.len(version) + 1
         term.setCursorPos(xPosition, 1)
