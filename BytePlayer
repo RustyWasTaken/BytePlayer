@@ -106,7 +106,7 @@ function handleMouseClick()
     while true do
         local event, _, _, cy = os.pullEvent("mouse_click")
         if event == "mouse_click" then
-            local queueStartY = math.floor(screenHeight / 3)
+            local queueStartY = math.floor(screenHeight / 3) + 1 -- Adjusted to exclude the line with "Queue:"
             local clickedIndex = math.floor((cy - queueStartY) / 2) + currentSongIndex
             print("Mouse Click at Y:", cy, "Queue Start Y:", queueStartY, "Clicked Index:", clickedIndex)  -- Print debugging information
 
