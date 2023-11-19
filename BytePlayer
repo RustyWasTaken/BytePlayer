@@ -101,12 +101,45 @@ function music()
     end
 end
 
+
+function music()
+    while true do
+        for i = currentSongIndex, #playlist do
+            local v = playlist[i]
+            song = v["title"]
+            artist = v["artist"]
+            current = v["url"]
+            local data = http.get(current, nil, true)
+            if data then
+                local decoder = dfpwm.make_decoder()
+                while true do
+                    local chunk = data.read(16 * 1024)
+                    if not chunk then
+                        break
+                    end
+
+                    local buffer = decoder(chunk)
+                    while not s.playAudio(buffer) do
+                        os.pullEvent("speaker_audio_empty")
+                    end
+                end
+                current = ""
+            end
+            currentSongIndex = i + 1  -- Move to the next song after playing the current one
+        end
+        currentSongIndex = 1  -- Restart playlist after reaching the end
+        sleep()
+    end
+end
+
 function display()
-    local screenWidth, screenHeight  -- Define screenWidth and screenHeight here
+    term.setTextColor(colors.gray)  -- Text color
+    term.setBackgroundColor(colors.lightGray)  -- Background color
+    term.setCursorBlink(false)
+
+    local screenWidth, screenHeight = term.getSize()
 
     while true do
-        screenWidth, screenHeight = term.getSize()  -- Get screen size inside the loop
-
         term.clear()
 
         local xPosition = screenWidth - string.len(version) + 1
@@ -160,20 +193,6 @@ function display()
     end
 end
 
--- Function to check if a mouse click is within a specified range
-local function isMouseClickInRange(x, y, width, height, cx, cy)
-    return cx >= x and cx < x + width and cy >= y and cy < y + height
-end
 
-while true do
-    local event, button, cx, cy = os.pullEvent()
-    if event == "mouse_click" then
-        if isMouseClickInRange(x, y, choice1:len(), 1, cx, cy) then
-            -- (Handle the click for choice1)
-        elseif isMouseClickInRange(x2, y2, choice2:len(), 1, cx, cy) then
-            -- (Handle the click for choice2)
-        elseif isMouseClickInRange(x3, y3, choice3:len(), 1, cx, cy) then
-            -- (Handle the click for choice3)
-        end
-    end
-end
+parallel.waitForAll(music, display)
+
