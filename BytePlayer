@@ -158,8 +158,27 @@ function display()
 
         term.setTextColor(colors.gray)  -- Reset text color for the rest of the screen
         term.setBackgroundColor(colors.lightGray)  -- Reset background color for the rest of the screen
+
+        local event, button, cx, cy = os.pullEvent()
+        if event == "mouse_click" then
+            for i = 1, math.min(20, #playlist) do
+                local xPositionTitle = xPositionQueue + math.floor((string.len(queueText) - string.len(playlist[i].title .. " | " .. playlist[i].artist)) / 2) + 1
+                local yPositionTitle = yPositionQueue + i
+
+                if cx >= xPositionTitle and cx < xPositionTitle + string.len(playlist[i].title .. " | " .. playlist[i].artist) and cy == yPositionTitle and button == 1 then
+                    term.setCursorPos(1, 1)
+                    term.clearLine()
+                    term.setCursorPos(1, 1)
+                    term.write("Playing: " .. playlist[i].title .. " by " .. playlist[i].artist)
+                    sleep(2)  -- Display the "Playing" message for 2 seconds
+                    term.clearLine()
+                end
+            end
+        end
+
         sleep()
     end
 end
+
 
 parallel.waitForAll(music, display)
