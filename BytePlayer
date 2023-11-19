@@ -98,7 +98,7 @@ function playSelectedSong(selectedIndex)
 end
 
 -- Function to handle mouse click events
-function handleMouseClick(screenHeight)
+function handleMouseClick()
     while true do
         local event, button, cx, cy = os.pullEvent("mouse_click")
         if event == "mouse_click" then
@@ -109,6 +109,7 @@ function handleMouseClick(screenHeight)
                 playSelectedSong(selectedIndex)
             end
         end
+        os.sleep(0.1)  -- Introduce a small delay to avoid event flooding
     end
 end
 
