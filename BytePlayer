@@ -12,6 +12,7 @@
 -- 1.1.8
 -- By ImBadAtNamesLol
 
+-- Set the version and changelog
 local version = "BytePlayer 1.1.8 [Alpha]"
 local changelog = [[
 Changelog:
@@ -20,15 +21,18 @@ Changelog:
 - Display changelog for 1 second before running
 - Centered artist text at the bottom
 - Highlighted the current song in the queue
+- Clickable buttons to skip to a specific song
+- Queue displays up to 20 songs
 ]]
 
+-- Find the speaker peripheral and initialize variables
 local s = peripheral.find("speaker")
 local current = ""
 local song = ""
 local artist = ""
 local dfpwm = require("cc.audio.dfpwm")
 local playlist = {}
-local currentSongIndex = 1  -- Track the index of the current song in the playlist
+local currentSongIndex = 1
 
 -- Function to load a playlist based on the given filename
 local function loadPlaylist(filename)
@@ -38,7 +42,6 @@ local function loadPlaylist(filename)
         local content = file.readAll()
         file.close()
 
-        -- Assuming the playlist is in Lua format (similar to the "playlist" file)
         local success, result = pcall(loadstring(content))
         if success and result and type(result) == "table" and result.playlist then
             return result.playlist
@@ -49,7 +52,7 @@ local function loadPlaylist(filename)
         print("Playlist not found: " .. filename)
     end
 
-    return {}  -- Return an empty playlist if loading fails
+    return {}
 end
 
 -- Function to display changelog for a short duration
@@ -57,20 +60,19 @@ local function displayChangelog()
     term.clear()
     term.setCursorPos(1, 1)
     print(changelog)
-    sleep(1)  -- Display changelog for 1 second
+    sleep(1)
     term.clear()
 end
 
 -- Display changelog before running
 displayChangelog()
 
--- Prompt the user to input a file name
+-- Prompt the user to input a file name and load the playlist
 print("Enter the playlist file name:")
 local filename = read()
-
--- Load the playlist based on the provided file name
 playlist = loadPlaylist(filename)
 
+-- Function to handle music playback
 function music()
     while true do
         for i = currentSongIndex, #playlist do
@@ -92,18 +94,19 @@ function music()
                         os.pullEvent("speaker_audio_empty")
                     end
                 end
-                current = ""
+                currentSongIndex = i + 1
             end
-            currentSongIndex = i + 1  -- Move to the next song after playing the current one
+            current = ""
         end
-        currentSongIndex = 1  -- Restart playlist after reaching the end
+        currentSongIndex = 1
         sleep()
     end
 end
 
+-- Function to handle the display
 function display()
-    term.setTextColor(colors.gray)  -- Text color
-    term.setBackgroundColor(colors.lightGray)  -- Background color
+    term.setTextColor(colors.gray)
+    term.setBackgroundColor(colors.lightGray)
     term.setCursorBlink(false)
 
     local screenWidth, screenHeight = term.getSize()
@@ -116,7 +119,6 @@ function display()
         term.write(version)
 
         if current then
-            -- Center the song and artist 7/8 down
             local xPositionSong = math.floor((screenWidth - string.len(song)) / 2) + 1
             local yPositionSong = math.floor(screenHeight * 7 / 8) - 1
             term.setCursorPos(xPositionSong, yPositionSong)
@@ -131,7 +133,6 @@ function display()
             term.write("Nothing is playing")
         end
 
-        -- Display the queue in the center of the screen
         local queueText = "Queue:"
         local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
         local yPositionQueue = math.floor(screenHeight / 3) - 1
@@ -156,8 +157,8 @@ function display()
             end
         end
 
-        term.setTextColor(colors.gray)  -- Reset text color for the rest of the screen
-        term.setBackgroundColor(colors.lightGray)  -- Reset background color for the rest of the screen
+        term.setTextColor(colors.gray)
+        term.setBackgroundColor(colors.lightGray)
 
         local event, button, cx, cy = os.pullEvent()
         if event == "mouse_click" then
@@ -166,7 +167,7 @@ function display()
                 local yPositionTitle = yPositionQueue + i
 
                 if cx >= xPositionTitle and cx < xPositionTitle + string.len(playlist[i].title .. " | " .. playlist[i].artist) and cy == yPositionTitle and button == 1 then
-                    currentSongIndex = i  -- Set the current song index to the clicked song
+                    currentSongIndex = i
                 end
             end
         end
@@ -175,5 +176,5 @@ function display()
     end
 end
 
-
+-- Run both functions in parallel
 parallel.waitForAll(music, display)
