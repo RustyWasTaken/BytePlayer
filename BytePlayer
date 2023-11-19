@@ -98,7 +98,7 @@ function playSelectedSong(selectedIndex)
 end
 
 -- Function to handle mouse click events
-function handleMouseClick()
+function handleMouseClick(screenHeight)
     while true do
         local event, button, cx, cy = os.pullEvent("mouse_click")
         if event == "mouse_click" then
@@ -207,7 +207,7 @@ end
 
 -- Main function to orchestrate everything
 function main()
-    parallel.waitForAll(music, display, handleMouseClick)
+    parallel.waitForAll(music, display, function() handleMouseClick(screenHeight) end)
 end
 
 -- Initialize and run the program
