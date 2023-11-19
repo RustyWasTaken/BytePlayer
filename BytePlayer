@@ -99,10 +99,11 @@ end
 
 -- Function to handle mouse click events
 function handleMouseClick()
+    local screenWidth, screenHeight = term.getSize()  -- Get screen size dynamically
+
     while true do
         local event, button, cx, cy = os.pullEvent("mouse_click")
         if event == "mouse_click" then
-            local screenWidth, screenHeight = term.getSize()  -- Get screen size dynamically
             local queueStartY = math.floor(screenHeight / 3)
             local selectedIndex = currentSongIndex + (cy - queueStartY)
             if selectedIndex >= 1 and selectedIndex <= #playlist then
