@@ -99,19 +99,19 @@ end
 
 -- Function to handle mouse click events
 function handleMouseClick()
+    local _, screenHeight = term.getSize()
+
     while true do
-        local _, screenHeight = term.getSize()
         local event, button, cx, cy = os.pullEvent("mouse_click")
         if event == "mouse_click" then
             local queueStartY = math.floor(screenHeight / 3)
-            local selectedIndex = currentSongIndex + (cy - queueStartY)
+            local selectedIndex = math.floor((cy - queueStartY) / 2) + currentSongIndex
             print("Mouse Click at Y:", cy, "Queue Start Y:", queueStartY, "Selected Index:", selectedIndex)  -- Print debugging information
             if selectedIndex >= 1 and selectedIndex <= #playlist then
                 currentSongIndex = selectedIndex
                 os.queueEvent("custom_play_selected_song")
             end
         end
-        os.sleep(0.1)  -- Add a small delay to prevent event flooding
     end
 end
 
