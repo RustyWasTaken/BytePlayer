@@ -170,8 +170,10 @@ end
 
 -- Define the function to handle mouse clicks
 local function handleMouseClick()
-    local _, screenHeight = term.getSize()
+    local screenWidth, screenHeight = term.getSize()
     local yPositionQueue = math.floor(screenHeight / 3) - 1
+
+    print("screenHeight:", screenHeight)  -- Add this line for debugging
 
     while true do
         local event, button, cx, cy = os.pullEvent("mouse_click")
@@ -181,6 +183,7 @@ local function handleMouseClick()
         end
     end
 end
+
 
 
 parallel.waitForAll(music, display, handleMouseClick)
