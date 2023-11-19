@@ -147,10 +147,13 @@ function music()
 end
 
 -- Function to display the playlist and user interface
+-- Function to display the playlist and user interface
 function display()
     term.setTextColor(colors.gray)  -- Text color
     term.setBackgroundColor(colors.lightGray)  -- Background color
     term.setCursorBlink(false)
+
+    local screenWidth, screenHeight = term.getSize()
 
     while true do
         term.clear()
@@ -197,6 +200,17 @@ function display()
                 term.setTextColor(colors.gray)
                 term.setBackgroundColor(colors.lightGray)
                 term.write("  " .. title .. " ")
+            end
+        end
+
+        -- Handle mouse click event
+        local event, button, cx, cy = os.pullEvent("mouse_click")
+        if event == "mouse_click" then
+            local queueStartY = math.floor(screenHeight / 3)
+            local selectedIndex = currentSongIndex + (cy - queueStartY)
+            if selectedIndex >= 1 and selectedIndex <= #playlist then
+                currentSongIndex = selectedIndex
+                playSelectedSong(currentSongIndex)
             end
         end
 
