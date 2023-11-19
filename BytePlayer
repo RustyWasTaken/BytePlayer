@@ -106,6 +106,7 @@ function handleMouseClick()
         if event == "mouse_click" then
             local queueStartY = math.floor(screenHeight / 3)
             local selectedIndex = currentSongIndex + (cy - queueStartY)
+            print("Selected Index:", selectedIndex)  -- Print the selected index for debugging
             if selectedIndex >= 1 and selectedIndex <= #playlist then
                 currentSongIndex = selectedIndex
                 os.queueEvent("custom_play_selected_song")
