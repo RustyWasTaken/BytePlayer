@@ -207,10 +207,12 @@ end
 
 -- Main function to orchestrate everything
 function main()
+    local screenWidth, screenHeight = term.getSize()  -- Get screen dimensions
+
     parallel.waitForAll(
         function() music() end,
         function() display() end,
-        function() handleMouseClick(screenHeight) end
+        function() handleMouseClick(screenHeight) end  -- Pass screenHeight to handleMouseClick
     )
 end
 
