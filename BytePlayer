@@ -29,7 +29,6 @@ local artist = ""
 local dfpwm = require("cc.audio.dfpwm")
 local playlist = {}
 local currentSongIndex = 1  -- Track the index of the current song in the playlist
-local screenWidth, screenHeight  -- Define screenWidth and screenHeight outside the loop
 
 -- Function to load a playlist based on the given filename
 local function loadPlaylist(filename)
@@ -103,9 +102,7 @@ function music()
 end
 
 function display()
-    term.setTextColor(colors.gray)  -- Text color
-    term.setBackgroundColor(colors.lightGray)  -- Background color
-    term.setCursorBlink(false)
+    local screenWidth, screenHeight  -- Define screenWidth and screenHeight here
 
     while true do
         screenWidth, screenHeight = term.getSize()  -- Get screen size inside the loop
@@ -163,4 +160,20 @@ function display()
     end
 end
 
-parallel.waitForAll(music, display)
+-- Function to check if a mouse click is within a specified range
+local function isMouseClickInRange(x, y, width, height, cx, cy)
+    return cx >= x and cx < x + width and cy >= y and cy < y + height
+end
+
+while true do
+    local event, button, cx, cy = os.pullEvent()
+    if event == "mouse_click" then
+        if isMouseClickInRange(x, y, choice1:len(), 1, cx, cy) then
+            -- (Handle the click for choice1)
+        elseif isMouseClickInRange(x2, y2, choice2:len(), 1, cx, cy) then
+            -- (Handle the click for choice2)
+        elseif isMouseClickInRange(x3, y3, choice3:len(), 1, cx, cy) then
+            -- (Handle the click for choice3)
+        end
+    end
+end
