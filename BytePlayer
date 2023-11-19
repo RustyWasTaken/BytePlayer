@@ -71,36 +71,11 @@ local filename = read()
 -- Load the playlist based on the provided file name
 playlist = loadPlaylist(filename)
 
-function music()
-    while true do
-        for i = currentSongIndex, #playlist do
-            local v = playlist[i]
-            song = v["title"]
-            artist = v["artist"]
-            current = v["url"]
-            local data = http.get(current, nil, true)
-            if data then
-                local decoder = dfpwm.make_decoder()
-                while true do
-                    local chunk = data.read(16 * 1024)
-                    if not chunk then
-                        break
-                    end
-
-                    local buffer = decoder(chunk)
-                    while not s.playAudio(buffer) do
-                        os.pullEvent("speaker_audio_empty")
-                    end
-                end
-                current = ""
-            end
-            currentSongIndex = i + 1  -- Move to the next song after playing the current one
-        end
-        currentSongIndex = 1  -- Restart playlist after reaching the end
-        sleep()
+local function playSelectedSong(selectedIndex)
+    if selectedIndex >= 1 and selectedIndex <= #playlist then
+        currentSongIndex = selectedIndex
     end
 end
-
 
 function music()
     while true do
@@ -193,6 +168,14 @@ function display()
     end
 end
 
-
-parallel.waitForAll(music, display)
-
+parallel.waitForAll(music, display, function()
+    while true do
+        local event, button, cx, cy = os.pullEvent()
+        if event == "mouse_click" then
+            if cy >= yPositionQueue and cy < yPositionQueue + 20 then
+                local selectedIndex = cy - yPositionQueue
+                playSelectedSong(selectedIndex)
+            end
+        end
+    end
+end)
