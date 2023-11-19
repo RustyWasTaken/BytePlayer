@@ -106,7 +106,7 @@ function handleMouseClick()
             local selectedIndex = currentSongIndex + (cy - queueStartY)
             if selectedIndex >= 1 and selectedIndex <= #playlist then
                 currentSongIndex = selectedIndex
-                playSelectedSong(selectedIndex)
+                parallel.waitForAny(playSelectedSong, function() os.pullEvent("mouse_up") end)
             end
         end
         os.sleep(0.1)  -- Introduce a small delay to avoid event flooding
