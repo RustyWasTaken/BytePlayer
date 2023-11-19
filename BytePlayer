@@ -99,9 +99,8 @@ end
 
 -- Function to handle mouse click events
 function handleMouseClick()
-    local screenHeight = 33  -- Set this to the actual height of your screen
-
     while true do
+        local _, screenHeight = term.getSize()
         local event, button, cx, cy = os.pullEvent("mouse_click")
         if event == "mouse_click" then
             local queueStartY = math.floor(screenHeight / 3)
