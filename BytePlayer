@@ -29,8 +29,6 @@ local artist = ""
 local dfpwm = require("cc.audio.dfpwm")
 local playlist = {}
 local currentSongIndex = 1  -- Track the index of the current song in the playlist
-local targetSongIndex = currentSongIndex
-
 
 -- Function to load a playlist based on the given filename
 local function loadPlaylist(filename)
@@ -99,58 +97,33 @@ function playSelectedSong(selectedIndex)
     end
 end
 
--- Function to handle mouse click events
-function handleMouseClick()
-    local _, screenHeight = term.getSize()
-
-    while true do
-        local event, _, _, cy = os.pullEvent("mouse_click")
-        if event == "mouse_click" then
-            local queueStartY = math.floor(screenHeight / 3) + 1 -- Adjusted to exclude the line with "Queue:"
-            local clickedIndex = math.floor((cy - queueStartY) / 2) + currentSongIndex
-
-            -- Check if the click is within the bounds of the playlist
-            if clickedIndex > currentSongIndex and clickedIndex <= currentSongIndex + math.min(20, #playlist) then
-                currentSongIndex = clickedIndex
-                os.queueEvent("custom_play_selected_song")
-            end
-        end
-    end
-end
-
 -- Function to play the current playlist
 function music()
     while true do
-        while currentSongIndex < targetSongIndex do
-            currentSongIndex = currentSongIndex + 1
-            sleep(0.5)  -- Adjust the sleep duration as needed
-        end
+        for i = currentSongIndex, #playlist do
+            local v = playlist[i]
+            song = v["title"]
+            artist = v["artist"]
+            current = v["url"]
+            local data = http.get(current, nil, true)
+            if data then
+                local decoder = dfpwm.make_decoder()
+                while true do
+                    local chunk = data.read(16 * 1024)
+                    if not chunk then
+                        break
+                    end
 
-        while currentSongIndex > targetSongIndex do
-            currentSongIndex = currentSongIndex - 1
-            sleep(0.5)  -- Adjust the sleep duration as needed
-        end
-
-        local v = playlist[currentSongIndex]
-        song = v["title"]
-        artist = v["artist"]
-        current = v["url"]
-        local data = http.get(current, nil, true)
-        if data then
-            local decoder = dfpwm.make_decoder()
-            while true do
-                local chunk = data.read(16 * 1024)
-                if not chunk then
-                    break
+                    local buffer = decoder(chunk)
+                    while not s.playAudio(buffer) do
+                        os.pullEvent("speaker_audio_empty")
+                    end
                 end
-
-                local buffer = decoder(chunk)
-                while not s.playAudio(buffer) do
-                    os.pullEvent("speaker_audio_empty")
-                end
+                current = ""
             end
-            current = ""
+            currentSongIndex = i + 1  -- Move to the next song after playing the current one
         end
+        currentSongIndex = 1  -- Restart playlist after reaching the end
         sleep()
     end
 end
@@ -161,10 +134,10 @@ function display()
     term.setBackgroundColor(colors.lightGray)  -- Background color
     term.setCursorBlink(false)
 
+    local screenWidth, screenHeight = term.getSize()
+
     while true do
         term.clear()
-
-        local screenWidth, screenHeight = term.getSize()  -- Get screen size dynamically
 
         local xPosition = screenWidth - string.len(version) + 1
         term.setCursorPos(xPosition, 1)
@@ -219,7 +192,7 @@ end
 
 -- Main function to orchestrate everything
 function main()
-    parallel.waitForAll(music, display, handleMouseClick)
+    parallel.waitForAll(music, display)
 
     -- Handle the custom event to play the selected song
     while true do
