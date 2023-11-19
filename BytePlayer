@@ -173,13 +173,16 @@ local function handleMouseClick()
     local screenWidth, screenHeight = term.getSize()
     local yPositionQueue = math.floor(screenHeight / 3) - 1
 
-    print("screenHeight:", screenHeight)  -- Add this line for debugging
-
     while true do
         local event, button, cx, cy = os.pullEvent("mouse_click")
         if cy >= yPositionQueue and cy < yPositionQueue + math.min(20, #playlist) then
             local selectedIndex = cy - yPositionQueue
             playSelectedSong(selectedIndex)
+
+            -- Debug information
+            term.setCursorPos(1, screenHeight)
+            term.clearLine()
+            print("Clicked on index:", selectedIndex)
         end
     end
 end
