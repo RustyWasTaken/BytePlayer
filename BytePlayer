@@ -9,27 +9,77 @@
 --                 888                                             888                  
 --            Y8b d88P                                        Y8b d88P                  
 --            "Y88P"                                          "Y88P"                   
+-- 1.1.8
 -- By ImBadAtNamesLol
+
+local version = "BytePlayer 1.1.8 [Alpha]"
+local changelog = [[
+Changelog:
+- Added playlist selection based on user input
+- Prompt user for playlist file name
+- Display changelog for 1 second before running
+- Centered artist text at the bottom
+- Highlighted the current song in the queue
+]]
 
 local s = peripheral.find("speaker")
 local current = ""
 local song = ""
 local artist = ""
 local dfpwm = require("cc.audio.dfpwm")
-local config = require("playlist")
-local playlist = config.playlist
+local playlist = {}
+local currentSongIndex = 1  -- Track the index of the current song in the playlist
+
+-- Function to load a playlist based on the given filename
+local function loadPlaylist(filename)
+    local path = fs.combine(shell.dir(), filename)
+    if fs.exists(path) then
+        local file = fs.open(path, "r")
+        local content = file.readAll()
+        file.close()
+
+        -- Assuming the playlist is in Lua format (similar to the "playlist" file)
+        local success, result = pcall(loadstring(content))
+        if success and result and type(result) == "table" and result.playlist then
+            return result.playlist
+        else
+            print("Error loading playlist: " .. filename)
+        end
+    else
+        print("Playlist not found: " .. filename)
+    end
+
+    return {}  -- Return an empty playlist if loading fails
+end
+
+-- Function to display changelog for a short duration
+local function displayChangelog()
+    term.clear()
+    term.setCursorPos(1, 1)
+    print(changelog)
+    sleep(1)  -- Display changelog for 1 second
+    term.clear()
+end
+
+-- Display changelog before running
+displayChangelog()
+
+-- Prompt the user to input a file name
+print("Enter the playlist file name:")
+local filename = read()
+
+-- Load the playlist based on the provided file name
+playlist = loadPlaylist(filename)
 
 function music()
     while true do
-        for _, v in pairs(playlist) do
+        for i = currentSongIndex, #playlist do
+            local v = playlist[i]
             song = v["title"]
             artist = v["artist"]
             current = v["url"]
-            
-            -- Wrap the http.get call in pcall to catch any errors
-            local success, data = pcall(http.get, current, nil, true)
-            
-            if success and data then
+            local data = http.get(current, nil, true)
+            if data then
                 local decoder = dfpwm.make_decoder()
                 while true do
                     local chunk = data.read(16 * 1024)
@@ -42,49 +92,72 @@ function music()
                         os.pullEvent("speaker_audio_empty")
                     end
                 end
-                data.close()  -- Close the http connection
                 current = ""
-            else
-                print("Failed to download: " .. song .. " by " .. artist)
             end
+            currentSongIndex = i + 1  -- Move to the next song after playing the current one
         end
+        currentSongIndex = 1  -- Restart playlist after reaching the end
         sleep()
     end
 end
 
 function display()
-    term.setTextColor(config.textcolor)
-    term.setBackgroundColor(config.backgroundcolor)
+    term.setTextColor(colors.gray)  -- Text color
+    term.setBackgroundColor(colors.lightGray)  -- Background color
     term.setCursorBlink(false)
 
-    local function centerText(y, text)
-        local x = math.floor((term.getSize() - string.len(text)) / 2) + 1
-        term.setCursorPos(x, y)
-        term.write(text)
-    end
-
-    local function centerTextVertically(y, text)
-        local screenHeight = term.getSize()
-        local textHeight = #text:split("\n")
-        local centerY = math.floor((screenHeight - textHeight) / 2) + 1
-
-        for i, line in ipairs(text:split("\n")) do
-            centerText(centerY + i - 1, line)
-        end
-    end
+    local screenWidth, screenHeight = term.getSize()
 
     while true do
         term.clear()
-        centerText(1, "BytePlayer Alpha 1.0")
-        centerTextVertically(math.floor(term.getSize() / 2) + 1, "Now playing:")
-        
+
+        local xPosition = screenWidth - string.len(version) + 1
+        term.setCursorPos(xPosition, 1)
+        term.write(version)
+
         if current then
-            centerTextVertically(math.floor(term.getSize() / 2) + 2, song)
-            centerTextVertically(math.floor(term.getSize() / 2) + 3, artist)
+            -- Center the song and artist 7/8 down
+            local xPositionSong = math.floor((screenWidth - string.len(song)) / 2) + 1
+            local yPositionSong = math.floor(screenHeight * 7 / 8) - 1
+            term.setCursorPos(xPositionSong, yPositionSong)
+            term.write(song)
+
+            local xPositionArtist = math.floor((screenWidth - string.len(artist)) / 2) + 1
+            local yPositionArtist = math.floor(screenHeight * 7 / 8)
+            term.setCursorPos(xPositionArtist, yPositionArtist)
+            term.write(artist)
         else
-            centerTextVertically(math.floor(term.getSize() / 2) + 2, "Nothing is playing")
+            term.setCursorPos(1, math.floor(screenHeight * 7 / 8) - 1)
+            term.write("Nothing is playing")
         end
 
+        -- Display the queue in the center of the screen
+        local queueText = "Queue:"
+        local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
+        local yPositionQueue = math.floor(screenHeight / 3) - 1
+
+        term.setCursorPos(xPositionQueue, yPositionQueue)
+        term.write(queueText)
+
+        for i = 1, math.min(15, #playlist) do
+            local title = playlist[i].title .. " | " .. playlist[i].artist
+            local xPositionTitle = xPositionQueue + math.floor((string.len(queueText) - string.len(title)) / 2) + 1
+            local yPositionTitle = yPositionQueue + i
+            term.setCursorPos(xPositionTitle, yPositionTitle)
+
+            if i == currentSongIndex then
+                term.setTextColor(colors.white)
+                term.setBackgroundColor(colors.gray)
+                term.write("> " .. title)
+            else
+                term.setTextColor(colors.gray)
+                term.setBackgroundColor(colors.lightGray)
+                term.write("  " .. title)
+            end
+        end
+
+        term.setTextColor(colors.gray)  -- Reset text color for the rest of the screen
+        term.setBackgroundColor(colors.lightGray)  -- Reset background color for the rest of the screen
         sleep()
     end
 end
