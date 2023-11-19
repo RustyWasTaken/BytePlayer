@@ -108,7 +108,8 @@ function handleMouseClick()
             local queueStartY = math.floor(screenHeight / 3)
             local selectedIndex = currentSongIndex + (cy - queueStartY)
             if selectedIndex >= 1 and selectedIndex <= #playlist then
-                playSelectedSong(selectedIndex)
+                currentSongIndex = selectedIndex  -- Update currentSongIndex when a song is clicked
+                playSelectedSong(currentSongIndex)
             end
         end
     end
