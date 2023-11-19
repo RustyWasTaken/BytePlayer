@@ -101,43 +101,13 @@ function music()
     end
 end
 
-
-function music()
-    while true do
-        for i = currentSongIndex, #playlist do
-            local v = playlist[i]
-            song = v["title"]
-            artist = v["artist"]
-            current = v["url"]
-            local data = http.get(current, nil, true)
-            if data then
-                local decoder = dfpwm.make_decoder()
-                while true do
-                    local chunk = data.read(16 * 1024)
-                    if not chunk then
-                        break
-                    end
-
-                    local buffer = decoder(chunk)
-                    while not s.playAudio(buffer) do
-                        os.pullEvent("speaker_audio_empty")
-                    end
-                end
-                current = ""
-            end
-            currentSongIndex = i + 1  -- Move to the next song after playing the current one
-        end
-        currentSongIndex = 1  -- Restart playlist after reaching the end
-        sleep()
-    end
-end
-
 function display()
     term.setTextColor(colors.gray)  -- Text color
     term.setBackgroundColor(colors.lightGray)  -- Background color
     term.setCursorBlink(false)
 
     local screenWidth, screenHeight = term.getSize()
+    local yPositionQueue = math.floor(screenHeight / 3) - 1  -- Define yPositionQueue outside the loop
 
     while true do
         term.clear()
@@ -165,8 +135,7 @@ function display()
         -- Display the queue in the center of the screen
         local queueText = "Queue:"
         local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
-        local yPositionQueue = math.floor(screenHeight / 3) - 1
-
+        
         term.setCursorPos(xPositionQueue, yPositionQueue)
         term.write(queueText)
 
@@ -193,5 +162,16 @@ function display()
     end
 end
 
+while true do
+    local event, button, cx, cy = os.pullEvent()
+    if event == "mouse_click" then
+        local queueStartX = math.floor((screenWidth - string.len("Queue:")) / 2)
+        local queueEndX = queueStartX + string.len("Queue:") - 1
 
-parallel.waitForAll(music, display)
+        if cx >= queueStartX and cx <= queueEndX and cy >= yPositionQueue and cy <= yPositionQueue + 20 then
+            -- Click is within the bounds of the displayed songs
+            local clickedIndex = cy - yPositionQueue
+            currentSongIndex = clickedIndex
+        end
+    end
+end
