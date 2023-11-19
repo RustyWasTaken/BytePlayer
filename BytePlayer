@@ -192,6 +192,7 @@ end
 
 -- Main function to orchestrate everything
 function main()
+    term.setTextScale(0.5)  -- Set the text scale to 0.5
     parallel.waitForAll(music, display)
 end
 
