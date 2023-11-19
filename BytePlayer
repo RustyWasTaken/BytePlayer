@@ -110,7 +110,7 @@ function handleMouseClick()
             local clickedIndex = math.floor((cy - queueStartY) / 2) + currentSongIndex
 
             -- Check if the click is within the bounds of the playlist
-            if clickedIndex >= currentSongIndex and clickedIndex <= currentSongIndex + math.min(20, #playlist) then
+            if clickedIndex > currentSongIndex and clickedIndex <= currentSongIndex + math.min(20, #playlist) then
                 currentSongIndex = clickedIndex
                 os.queueEvent("custom_play_selected_song")
             end
