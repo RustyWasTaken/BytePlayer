@@ -77,7 +77,7 @@ local function playSelectedSong(selectedIndex)
     end
 end
 
-function music()
+function music(playlist)
     while true do
         for i = currentSongIndex, #playlist do
             local v = playlist[i]
@@ -101,6 +101,7 @@ function music()
                 current = ""
             end
             currentSongIndex = i + 1  -- Move to the next song after playing the current one
+            sleep()  -- Allow time for the event loop to handle other events
         end
         currentSongIndex = 1  -- Restart playlist after reaching the end
         sleep()
