@@ -193,14 +193,6 @@ end
 -- Main function to orchestrate everything
 function main()
     parallel.waitForAll(music, display)
-
-    -- Handle the custom event to play the selected song
-    while true do
-        local event = { os.pullEvent() }
-        if event[1] == "custom_play_selected_song" then
-            playSelectedSong(currentSongIndex)
-        end
-    end
 end
 
 -- Initialize and run the program
