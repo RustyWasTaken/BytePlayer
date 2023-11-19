@@ -168,14 +168,15 @@ function display()
     end
 end
 
-parallel.waitForAll(music, display, function()
+-- Define the function to handle mouse clicks
+local function handleMouseClick()
     while true do
-        local event, button, cx, cy = os.pullEvent()
-        if event == "mouse_click" then
-            if cy >= yPositionQueue and cy < yPositionQueue + 20 then
-                local selectedIndex = cy - yPositionQueue
-                playSelectedSong(selectedIndex)
-            end
+        local event, button, cx, cy = os.pullEvent("mouse_click")
+        if cy >= yPositionQueue and cy < yPositionQueue + math.min(20, #playlist) then
+            local selectedIndex = cy - yPositionQueue
+            playSelectedSong(selectedIndex)
         end
     end
-end)
+end
+
+parallel.waitForAll(music, display, handleMouseClick)
