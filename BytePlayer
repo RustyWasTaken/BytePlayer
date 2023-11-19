@@ -29,6 +29,7 @@ local artist = ""
 local dfpwm = require("cc.audio.dfpwm")
 local playlist = {}
 local currentSongIndex = 1  -- Track the index of the current song in the playlist
+local screenWidth, screenHeight  -- Define screenWidth and screenHeight outside the loop
 
 -- Function to load a playlist based on the given filename
 local function loadPlaylist(filename)
@@ -106,10 +107,9 @@ function display()
     term.setBackgroundColor(colors.lightGray)  -- Background color
     term.setCursorBlink(false)
 
-    local screenWidth, screenHeight = term.getSize()
-    local yPositionQueue = math.floor(screenHeight / 3) - 1  -- Define yPositionQueue outside the loop
-
     while true do
+        screenWidth, screenHeight = term.getSize()  -- Get screen size inside the loop
+
         term.clear()
 
         local xPosition = screenWidth - string.len(version) + 1
@@ -135,7 +135,8 @@ function display()
         -- Display the queue in the center of the screen
         local queueText = "Queue:"
         local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
-        
+        local yPositionQueue = math.floor(screenHeight / 3) - 1
+
         term.setCursorPos(xPositionQueue, yPositionQueue)
         term.write(queueText)
 
@@ -162,16 +163,4 @@ function display()
     end
 end
 
-while true do
-    local event, button, cx, cy = os.pullEvent()
-    if event == "mouse_click" then
-        local queueStartX = math.floor((screenWidth - string.len("Queue:")) / 2)
-        local queueEndX = queueStartX + string.len("Queue:") - 1
-
-        if cx >= queueStartX and cx <= queueEndX and cy >= yPositionQueue and cy <= yPositionQueue + 20 then
-            -- Click is within the bounds of the displayed songs
-            local clickedIndex = cy - yPositionQueue
-            currentSongIndex = clickedIndex
-        end
-    end
-end
+parallel.waitForAll(music, display)
