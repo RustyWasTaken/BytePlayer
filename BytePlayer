@@ -207,11 +207,8 @@ end
 
 -- Main function to orchestrate everything
 function main()
-    parallel.waitForAll(
-        function() music() end,
-        function() display() end,
-        function() handleMouseClick(term.getSize() or 51) end
-    )
+    local screenWidth, screenHeight = term.getSize()
+    parallel.waitForAll(music, display, function() handleMouseClick(screenHeight) end)
 end
 
 -- Initialize and run the program
