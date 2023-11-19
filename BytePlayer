@@ -71,13 +71,49 @@ local filename = read()
 -- Load the playlist based on the provided file name
 playlist = loadPlaylist(filename)
 
-local function playSelectedSong(selectedIndex)
-    if selectedIndex >= 1 and selectedIndex <= #playlist then
-        currentSongIndex = selectedIndex
+-- Function to play the selected song
+function playSelectedSong(selectedIndex)
+    local selected = playlist[selectedIndex]
+    if selected then
+        song = selected["title"]
+        artist = selected["artist"]
+        current = selected["url"]
+        local data = http.get(current, nil, true)
+        if data then
+            local decoder = dfpwm.make_decoder()
+            while true do
+                local chunk = data.read(16 * 1024)
+                if not chunk then
+                    break
+                end
+
+                local buffer = decoder(chunk)
+                while not s.playAudio(buffer) do
+                    os.pullEvent("speaker_audio_empty")
+                end
+            end
+            current = ""
+        end
     end
 end
 
-function music(playlist)
+-- Function to handle mouse click events
+function handleMouseClick()
+    while true do
+        local event, button, cx, cy = os.pullEvent("mouse_click")
+        if event == "mouse_click" then
+            local queueStartY = math.floor(screenHeight / 3)
+            local selectedIndex = currentSongIndex + (cy - queueStartY)
+            if selectedIndex >= 1 and selectedIndex <= #playlist then
+                currentSongIndex = selectedIndex
+                playSelectedSong(selectedIndex)
+            end
+        end
+    end
+end
+
+-- Function to play the current playlist
+function music()
     while true do
         for i = currentSongIndex, #playlist do
             local v = playlist[i]
@@ -101,13 +137,13 @@ function music(playlist)
                 current = ""
             end
             currentSongIndex = i + 1  -- Move to the next song after playing the current one
-            sleep()  -- Allow time for the event loop to handle other events
         end
         currentSongIndex = 1  -- Restart playlist after reaching the end
         sleep()
     end
 end
 
+-- Function to display the playlist and user interface
 function display()
     term.setTextColor(colors.gray)  -- Text color
     term.setBackgroundColor(colors.lightGray)  -- Background color
@@ -169,31 +205,10 @@ function display()
     end
 end
 
--- Function to handle mouse clicks on the queue
-local function handleMouseClick(playlist)
-    while true do
-        local event, button, cx, cy = os.pullEvent("mouse_click")
-        if event == "mouse_click" then
-            local screenWidth, screenHeight = term.getSize()
-            local xPositionQueue = math.floor((screenWidth - string.len("Queue:")) / 2)
-            local yPositionQueue = math.floor(screenHeight / 3) - 1
-
-            for i = 1, math.min(20, #playlist) do
-                local title = playlist[i].title .. " | " .. playlist[i].artist
-                local xPositionTitle = xPositionQueue + math.floor((string.len("Queue:") - string.len(title)) / 2) + 1
-                local yPositionTitle = yPositionQueue + i
-
-                -- Check if the mouse click is within the bounds of the title
-                if cx >= xPositionTitle and cx < xPositionTitle + string.len(title) and cy == yPositionTitle and button == 1 then
-                    term.setCursorPos(28, 6)
-                    write("Clicked on song: " .. title)
-                    -- Add logic to play the selected song
-                    currentSongIndex = i
-                end
-            end
-        end
-    end
+-- Main function to orchestrate everything
+function main()
+    parallel.waitForAll(music, display, handleMouseClick)
 end
 
--- Update the parallel.waitForAll to pass the playlist
-parallel.waitForAll(music, function() display(playlist) end, function() handleMouseClick(playlist) end)
+-- Initialize and run the program
+main()
