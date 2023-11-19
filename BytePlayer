@@ -92,7 +92,7 @@ function playSelectedSong(selectedIndex)
                     os.pullEvent("speaker_audio_empty")
                 end
             end
-            current = ""
+            current = ""  -- Reset the 'current' variable after playing the selected song
         end
     end
 end
