@@ -12,7 +12,6 @@
 -- 1.1.8
 -- By ImBadAtNamesLol
 
--- Set the version and changelog
 local version = "BytePlayer 1.1.8 [Alpha]"
 local changelog = [[
 Changelog:
@@ -25,7 +24,6 @@ Changelog:
 - Queue displays up to 20 songs
 ]]
 
--- Find the speaker peripheral and initialize variables
 local s = peripheral.find("speaker")
 local current = ""
 local song = ""
@@ -34,7 +32,6 @@ local dfpwm = require("cc.audio.dfpwm")
 local playlist = {}
 local currentSongIndex = 1
 
--- Function to load a playlist based on the given filename
 local function loadPlaylist(filename)
     local path = fs.combine(shell.dir(), filename)
     if fs.exists(path) then
@@ -55,7 +52,6 @@ local function loadPlaylist(filename)
     return {}
 end
 
--- Function to display changelog for a short duration
 local function displayChangelog()
     term.clear()
     term.setCursorPos(1, 1)
@@ -64,15 +60,12 @@ local function displayChangelog()
     term.clear()
 end
 
--- Display changelog before running
 displayChangelog()
 
--- Prompt the user to input a file name and load the playlist
 print("Enter the playlist file name:")
 local filename = read()
 playlist = loadPlaylist(filename)
 
--- Function to handle music playback
 function music()
     while true do
         for i = currentSongIndex, #playlist do
@@ -103,13 +96,10 @@ function music()
     end
 end
 
--- Function to handle the display
 function display()
     term.setTextColor(colors.gray)
     term.setBackgroundColor(colors.lightGray)
     term.setCursorBlink(false)
-
-    local screenWidth, screenHeight = term.getSize()
 
     while true do
         term.clear()
@@ -176,5 +166,4 @@ function display()
     end
 end
 
--- Run both functions in parallel
 parallel.waitForAll(music, display)
