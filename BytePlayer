@@ -111,7 +111,7 @@ function handleMouseClick()
             print("Mouse Click at Y:", cy, "Queue Start Y:", queueStartY, "Clicked Index:", clickedIndex)  -- Print debugging information
 
             if clickedIndex >= 1 and clickedIndex <= #playlist then
-                targetSongIndex = clickedIndex
+                currentSongIndex = clickedIndex
                 os.queueEvent("custom_play_selected_song")
             end
         end
