@@ -105,7 +105,7 @@ function handleMouseClick()
         local event, button, cx, cy = os.pullEvent("mouse_click")
         if event == "mouse_click" then
             local queueStartY = math.floor(screenHeight / 3)
-            local selectedIndex = math.floor((cy - queueStartY) / 2) + currentSongIndex
+            local selectedIndex = math.floor((cy - queueStartY) / 2)
             print("Mouse Click at Y:", cy, "Queue Start Y:", queueStartY, "Selected Index:", selectedIndex)  -- Print debugging information
             if selectedIndex >= 1 and selectedIndex <= #playlist then
                 currentSongIndex = selectedIndex
