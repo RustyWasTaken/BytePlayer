@@ -166,12 +166,7 @@ function display()
                 local yPositionTitle = yPositionQueue + i
 
                 if cx >= xPositionTitle and cx < xPositionTitle + string.len(playlist[i].title .. " | " .. playlist[i].artist) and cy == yPositionTitle and button == 1 then
-                    term.setCursorPos(1, 1)
-                    term.clearLine()
-                    term.setCursorPos(1, 1)
-                    term.write("Playing: " .. playlist[i].title .. " by " .. playlist[i].artist)
-                    sleep(2)  -- Display the "Playing" message for 2 seconds
-                    term.clearLine()
+                    currentSongIndex = i  -- Set the current song index to the clicked song
                 end
             end
         end
