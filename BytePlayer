@@ -111,6 +111,7 @@ function handleMouseClick()
                 os.queueEvent("custom_play_selected_song")
             end
         end
+        os.sleep(0.1)  -- Add a small delay to prevent event flooding
     end
 end
 
