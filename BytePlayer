@@ -139,7 +139,7 @@ function display()
     while true do
         term.clear()
 
-        local xPosition = screenWidth - string.len(version) + 1
+        local xPosition = math.floor(screenWidth / 2) - math.floor(string.len(version) / 2) + 1
         term.setCursorPos(xPosition, 1)
         term.write(version)
 
@@ -172,12 +172,12 @@ function display()
 
         if current then
             -- Center the song and artist below the queue
-            local xPositionSong = math.floor((screenWidth - string.len(song)) / 2) + 1
+            local xPositionSong = math.floor(screenWidth / 2) - math.floor(string.len(song) / 2) + 1
             local yPositionSong = yPositionQueue + maxDisplaySongs + 1
             term.setCursorPos(xPositionSong, yPositionSong)
             term.write(song)
 
-            local xPositionArtist = math.floor((screenWidth - string.len(artist)) / 2) + 1
+            local xPositionArtist = math.floor(screenWidth / 2) - math.floor(string.len(artist) / 2) + 1
             local yPositionArtist = yPositionSong + 1
             term.setCursorPos(xPositionArtist, yPositionArtist)
             term.write(artist)
