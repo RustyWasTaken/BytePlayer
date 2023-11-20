@@ -135,6 +135,7 @@ function display()
 
     local screenWidth, screenHeight = term.getSize()
     local maxDisplaySongs = 13  -- Maximum number of songs to display at a time
+    local scrollThreshold = 3  -- Scroll when the third song is playing
 
     while true do
         term.clear()
@@ -189,6 +190,11 @@ function display()
         term.setTextColor(colors.gray)  -- Reset text color for the rest of the screen
         term.setBackgroundColor(colors.lightGray)  -- Reset background color for the rest of the screen
         sleep()
+
+        -- Scroll the playlist when the third song is playing
+        if currentSongIndex >= scrollThreshold then
+            currentSongIndex = currentSongIndex - 1
+        end
     end
 end
 
