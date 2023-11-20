@@ -101,22 +101,30 @@ function music()
             song = v["title"]
             artist = v["artist"]
             current = v["url"]
-            local data = http.get(current, nil, true)
-            if data then
-                local decoder = dfpwm.make_decoder()
-                while true do
-                    local chunk = data.read(16 * 1024)
-                    if not chunk then
-                        break
-                    end
+            
+            local success, errorMessage = pcall(function()
+                local data = http.get(current, nil, true)
+                if data then
+                    local decoder = dfpwm.make_decoder()
+                    while true do
+                        local chunk = data.read(16 * 1024)
+                        if not chunk then
+                            break
+                        end
 
-                    local buffer = decoder(chunk)
-                    while not s.playAudio(buffer) do
-                        os.pullEvent("speaker_audio_empty")
+                        local buffer = decoder(chunk)
+                        while not s.playAudio(buffer) do
+                            os.pullEvent("speaker_audio_empty")
+                        end
                     end
+                    current = ""
                 end
-                current = ""
+            end)
+
+            if not success then
+                print("There was an error playing the song: " .. errorMessage)
             end
+
             currentSongIndex = i + 1  -- Move to the next song after playing the current one
         end
         currentSongIndex = 1  -- Restart playlist after reaching the end
