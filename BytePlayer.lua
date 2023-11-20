@@ -11,10 +11,11 @@
 --            "Y88P"                                          "Y88P"                   
 -- By ImBadAtNamesLol
 
-local version = "BytePlayer 1.1.4 [Alpha]"
+local version = "BytePlayer 1.1.5 [Alpha]"
 local changelog = [[
 Changelog:
-- fucked up bad
+- Queue now scrolls properly
+- Increased queue list to 8 songs
 ]]
 
 local s = peripheral.find("speaker")
@@ -123,7 +124,6 @@ function music()
     end
 end
 
--- Function to display the playlist and user interface
 function display()
     term.setTextColor(colors.gray)  -- Text color
     term.setBackgroundColor(colors.lightGray)  -- Background color
@@ -131,30 +131,50 @@ function display()
 
     local screenWidth, screenHeight = term.getSize()
     local maxDisplaySongs = 9  -- Maximum number of songs to display at a time
+    local scrollOffset = 0  -- Variable to track the scrolling offset
+    local scrollThreshold = 3  -- Start scrolling at the third song
 
     while true do
         term.clear()
 
-        local xPosition = math.floor(screenWidth / 2) - math.floor(string.len(version) / 2) + 1
+        local xPosition = screenWidth - string.len(version) + 1
         term.setCursorPos(xPosition, 1)
         term.write(version)
 
-        -- Display the queue in the middle of the screen
+        if current then
+            -- Center the song and artist 7/8 down
+            local xPositionSong = math.floor((screenWidth - string.len(song)) / 2) + 1
+            local yPositionSong = math.floor(screenHeight * 7 / 8) - 1
+            term.setCursorPos(xPositionSong, yPositionSong)
+            term.write(song)
+
+            local xPositionArtist = math.floor((screenWidth - string.len(artist)) / 2) + 1
+            local yPositionArtist = math.floor(screenHeight * 7 / 8)
+            term.setCursorPos(xPositionArtist, yPositionArtist)
+            term.write(artist)
+        else
+            term.setCursorPos(1, math.floor(screenHeight * 7 / 8) - 1)
+            term.write("Nothing is playing")
+        end
+
+        -- Display the queue in the center of the screen
         local queueText = "Queue:"
         local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
-        local yPositionQueue = math.floor(screenHeight / 2) - math.floor(maxDisplaySongs / 2) + 1
+        local yPositionQueue = math.floor(screenHeight / 3) - 3  -- Adjust this value to raise the queue
 
         term.setCursorPos(xPositionQueue, yPositionQueue)
         term.write(queueText)
 
-        local middleSongIndex = math.floor(currentSongIndex + maxDisplaySongs / 2)
+        local startDisplayIndex = currentSongIndex
+        local endDisplayIndex = currentSongIndex + maxDisplaySongs - 1
 
-        for i = middleSongIndex - math.floor(maxDisplaySongs / 2), middleSongIndex + math.floor(maxDisplaySongs / 2) do
-            -- Check if the index is within the valid range
-            if i >= 1 and i <= #playlist then
+        for i = startDisplayIndex, endDisplayIndex do
+            local displayIndex = i - scrollOffset + 1
+
+            if displayIndex >= 1 and displayIndex <= maxDisplaySongs then
                 local title = playlist[i].title .. " | " .. playlist[i].artist
                 local xPositionTitle = xPositionQueue + math.floor((string.len(queueText) - string.len(title)) / 2) + 1
-                local yPositionTitle = yPositionQueue + i - middleSongIndex + 1
+                local yPositionTitle = yPositionQueue + displayIndex
 
                 term.setCursorPos(xPositionTitle, yPositionTitle)
 
@@ -170,20 +190,11 @@ function display()
             end
         end
 
-        if current then
-            -- Center the song and artist below the queue
-            local xPositionSong = math.floor(screenWidth / 2) - math.floor(string.len(song) / 2) + 1
-            local yPositionSong = yPositionQueue + maxDisplaySongs + 3
-            term.setCursorPos(xPositionSong, yPositionSong)
-            term.write(song)
-
-            local xPositionArtist = math.floor(screenWidth / 2) - math.floor(string.len(artist) / 2) + 1
-            local yPositionArtist = yPositionSong + 1
-            term.setCursorPos(xPositionArtist, yPositionArtist)
-            term.write(artist)
+        -- Adjust scroll offset based on the current song index
+        if currentSongIndex >= scrollThreshold then
+            scrollOffset = currentSongIndex - scrollThreshold
         else
-            term.setCursorPos(1, yPositionQueue + maxDisplaySongs + 4)
-            term.write("Nothing is playing")
+            scrollOffset = 0
         end
 
         term.setTextColor(colors.gray)  -- Reset text color for the rest of the screen
@@ -191,6 +202,7 @@ function display()
         sleep()
     end
 end
+
 
 -- Main function to orchestrate everything
 function main()
