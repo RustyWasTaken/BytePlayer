@@ -145,14 +145,14 @@ function display()
         term.write(version)
 
         if current then
-            -- Center the song and artist 7/8 down
+            -- Center the song and artist lower on the screen
             local xPositionSong = math.floor((screenWidth - string.len(song)) / 2) + 1
-            local yPositionSong = math.floor(screenHeight * 7 / 8) - 1
+            local yPositionSong = math.floor(screenHeight * 3 / 4)  -- Adjusted value
             term.setCursorPos(xPositionSong, yPositionSong)
             term.write(song)
 
             local xPositionArtist = math.floor((screenWidth - string.len(artist)) / 2) + 1
-            local yPositionArtist = math.floor(screenHeight * 7 / 8)
+            local yPositionArtist = yPositionSong + 1  -- Move artist down by 1 space
             term.setCursorPos(xPositionArtist, yPositionArtist)
             term.write(artist)
         else
@@ -163,7 +163,7 @@ function display()
         -- Display the queue lower on the screen
         local queueText = "Queue:"
         local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
-        local yPositionQueue = math.floor(screenHeight * 2 / 3) - 1  -- Adjusted value
+        local yPositionQueue = math.floor(screenHeight * 2 / 3) + 1  -- Adjusted value
 
         term.setCursorPos(xPositionQueue, yPositionQueue)
         term.write(queueText)
