@@ -197,5 +197,10 @@ function display()
     end
 end
 
+-- Main function to orchestrate everything
+function main()
+    parallel.waitForAll(music, display)
+end
+
 -- Initialize and run the program
 main()
