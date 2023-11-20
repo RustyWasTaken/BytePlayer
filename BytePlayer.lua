@@ -99,7 +99,7 @@ function music()
         for i = currentSongIndex, #playlist do
             local v = playlist[i]
 
-            if v then
+            if v and v["title"] and v["artist"] and v["url"] then
                 song = v["title"]
                 artist = v["artist"]
                 current = v["url"]
@@ -138,6 +138,10 @@ function music()
                 currentSongIndex = 1  -- Restart playlist after reaching the end
             end
         end
+
+        sleep()
+    end
+end
 
         sleep()
     end
