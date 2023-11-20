@@ -175,18 +175,18 @@ function display()
         end
 
         if current then
-            -- Center the song and artist above the queue
+            -- Center the song and artist at the bottom of the screen
             local xPositionSong = math.floor(screenWidth / 2) - math.floor(string.len(song) / 2) + 1
-            local yPositionSong = yPositionQueue - 2
+            local yPositionSong = screenHeight - 2
             term.setCursorPos(xPositionSong, yPositionSong)
             term.write(song)
 
             local xPositionArtist = math.floor(screenWidth / 2) - math.floor(string.len(artist) / 2) + 1
-            local yPositionArtist = yPositionSong + 1
+            local yPositionArtist = screenHeight - 1
             term.setCursorPos(xPositionArtist, yPositionArtist)
             term.write(artist)
         else
-            term.setCursorPos(1, yPositionQueue + maxDisplaySongs + 2)
+            term.setCursorPos(1, screenHeight - 2)
             term.write("Nothing is playing")
         end
 
