@@ -19,6 +19,7 @@ Changelog:
 - Display changelog for 1 second before running
 - Added functional queue
 - Added auto replay function
+- Repositioned queue
 ]]
 
 local s = peripheral.find("speaker")
