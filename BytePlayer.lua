@@ -160,9 +160,10 @@ function display()
                 local title = playlist[i].title .. " | " .. playlist[i].artist
                 local xPositionTitle = xPositionQueue + math.floor((string.len(queueText) - string.len(title)) / 2) + 1
                 local yPositionTitle = yPositionQueue + i - middleSongIndex + 1
-                term.setCursorPos(xPositionTitle, yPositionTitle)
 
-                if i == currentSongIndex then
+                -- Implement scrolling behavior for the third song
+                local scrollThreshold = currentSongIndex + 2
+                if i == scrollThreshold then
                     term.setTextColor(colors.white)
                     term.setBackgroundColor(colors.gray)
                     term.write("> " .. title .. " ")
@@ -175,18 +176,18 @@ function display()
         end
 
         if current then
-            -- Center the song and artist at the bottom of the screen
+            -- Center the song and artist below the queue
             local xPositionSong = math.floor(screenWidth / 2) - math.floor(string.len(song) / 2) + 1
-            local yPositionSong = screenHeight - 2
+            local yPositionSong = yPositionQueue + maxDisplaySongs + 3
             term.setCursorPos(xPositionSong, yPositionSong)
             term.write(song)
 
             local xPositionArtist = math.floor(screenWidth / 2) - math.floor(string.len(artist) / 2) + 1
-            local yPositionArtist = screenHeight - 1
+            local yPositionArtist = yPositionSong + 1
             term.setCursorPos(xPositionArtist, yPositionArtist)
             term.write(artist)
         else
-            term.setCursorPos(1, screenHeight - 2)
+            term.setCursorPos(1, yPositionQueue + maxDisplaySongs + 4)
             term.write("Nothing is playing")
         end
 
@@ -194,11 +195,6 @@ function display()
         term.setBackgroundColor(colors.lightGray)  -- Reset background color for the rest of the screen
         sleep()
     end
-end
-
--- Main function to orchestrate everything
-function main()
-    parallel.waitForAll(music, display)
 end
 
 -- Initialize and run the program
