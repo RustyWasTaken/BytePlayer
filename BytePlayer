@@ -160,10 +160,10 @@ function display()
             term.write("Nothing is playing")
         end
 
-        -- Display the queue in the center of the screen
+        -- Display the queue lower on the screen
         local queueText = "Queue:"
         local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
-        local yPositionQueue = math.floor(screenHeight / 3) - 1
+        local yPositionQueue = math.floor(screenHeight * 5 / 6) - 1
 
         term.setCursorPos(xPositionQueue, yPositionQueue)
         term.write(queueText)
