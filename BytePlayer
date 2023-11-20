@@ -9,17 +9,17 @@
 --                 888                                             888                  
 --            Y8b d88P                                        Y8b d88P                  
 --            "Y88P"                                          "Y88P"                   
--- 1.1.8
+-- 1.1.0
 -- By ImBadAtNamesLol
 
-local version = "BytePlayer 1.1.8 [Alpha]"
+local version = "BytePlayer 1.1.0 [Alpha]"
 local changelog = [[
 Changelog:
 - Added playlist selection based on user input
 - Prompt user for playlist file name
 - Display changelog for 1 second before running
-- Centered artist text at the bottom
-- Highlighted the current song in the queue
+- Added functional queue
+- Added auto replay function
 ]]
 
 local s = peripheral.find("speaker")
@@ -135,7 +135,7 @@ function display()
     term.setCursorBlink(false)
 
     local screenWidth, screenHeight = term.getSize()
-    local maxDisplaySongs = 5  -- Maximum number of songs to display at a time
+    local maxDisplaySongs = 9  -- Maximum number of songs to display at a time
 
     while true do
         term.clear()
@@ -168,10 +168,12 @@ function display()
         term.setCursorPos(xPositionQueue, yPositionQueue)
         term.write(queueText)
 
-        for i = currentSongIndex, math.min(currentSongIndex + maxDisplaySongs - 1, #playlist) do
+        local middleSongIndex = math.floor(currentSongIndex + maxDisplaySongs / 2)
+
+        for i = middleSongIndex - math.floor(maxDisplaySongs / 2), middleSongIndex + math.floor(maxDisplaySongs / 2) do
             local title = playlist[i].title .. " | " .. playlist[i].artist
             local xPositionTitle = xPositionQueue + math.floor((string.len(queueText) - string.len(title)) / 2) + 1
-            local yPositionTitle = yPositionQueue + i - currentSongIndex + 1
+            local yPositionTitle = yPositionQueue + i - middleSongIndex + 1
             term.setCursorPos(xPositionTitle, yPositionTitle)
 
             if i == currentSongIndex then
