@@ -163,7 +163,7 @@ function display()
             term.setCursorPos(xPositionArtist, yPositionArtist)
             term.write(artist)
         else
-            term.setCursorPos(1, math.floor(screenHeight / 2) + math.floor(maxDisplaySongs / 2) + 1)
+            term.setCursorPos(1, yPositionQueue + maxDisplaySongs)
             term.write("Nothing is playing")
         end
 
