@@ -144,6 +144,14 @@ function display()
         term.setCursorPos(xPosition, 1)
         term.write(version)
 
+        -- Display the queue higher on the screen
+        local queueText = "Queue:"
+        local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
+        local yPositionQueue = 2  -- Adjusted value
+
+        term.setCursorPos(xPositionQueue, yPositionQueue)
+        term.write(queueText)
+
         if current then
             -- Center the song and artist lower on the screen
             local xPositionSong = math.floor((screenWidth - string.len(song)) / 2) + 1
@@ -159,14 +167,6 @@ function display()
             term.setCursorPos(1, math.floor(screenHeight * 7 / 8) - 1)
             term.write("Nothing is playing")
         end
-
-        -- Display the queue lower on the screen
-        local queueText = "Queue:"
-        local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
-        local yPositionQueue = math.floor(screenHeight * 2 / 3) + 1  -- Adjusted value
-
-        term.setCursorPos(xPositionQueue, yPositionQueue)
-        term.write(queueText)
 
         local middleSongIndex = math.floor(currentSongIndex + maxDisplaySongs / 2)
 
