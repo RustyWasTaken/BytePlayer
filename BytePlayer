@@ -163,7 +163,7 @@ function display()
         -- Display the queue lower on the screen
         local queueText = "Queue:"
         local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
-        local yPositionQueue = math.floor(screenHeight * 5 / 6) - 1
+        local yPositionQueue = math.floor(screenHeight * 2 / 3) - 1  -- Adjusted value
 
         term.setCursorPos(xPositionQueue, yPositionQueue)
         term.write(queueText)
