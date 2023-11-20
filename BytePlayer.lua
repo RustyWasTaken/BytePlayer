@@ -133,9 +133,12 @@ function music()
             end
 
             currentSongIndex = i + 1  -- Move to the next song after playing the current one
+
+            if currentSongIndex > #playlist then
+                currentSongIndex = 1  -- Restart playlist after reaching the end
+            end
         end
 
-        currentSongIndex = 1  -- Restart playlist after reaching the end
         sleep()
     end
 end
