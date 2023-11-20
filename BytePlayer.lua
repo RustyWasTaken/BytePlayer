@@ -11,15 +11,10 @@
 --            "Y88P"                                          "Y88P"                   
 -- By ImBadAtNamesLol
 
-local version = "BytePlayer 1.1.3 [Alpha]"
+local version = "BytePlayer 1.1.4 [Alpha]"
 local changelog = [[
 Changelog:
-- Added playlist selection based on user input
-- Prompt user for playlist file name
-- Display changelog for 1 second before running
-- Added functional queue
-- Added auto replay function
-- Repositioned queue
+- fucked up bad
 ]]
 
 local s = peripheral.find("speaker")
@@ -135,7 +130,7 @@ function display()
     term.setCursorBlink(false)
 
     local screenWidth, screenHeight = term.getSize()
-    local maxDisplaySongs = 13  -- Maximum number of songs to display at a time
+    local maxDisplaySongs = 9  -- Maximum number of songs to display at a time
 
     while true do
         term.clear()
@@ -161,9 +156,9 @@ function display()
                 local xPositionTitle = xPositionQueue + math.floor((string.len(queueText) - string.len(title)) / 2) + 1
                 local yPositionTitle = yPositionQueue + i - middleSongIndex + 1
 
-                -- Implement scrolling behavior for the third song
-                local scrollThreshold = currentSongIndex + 2
-                if i == scrollThreshold then
+                term.setCursorPos(xPositionTitle, yPositionTitle)
+
+                if i == currentSongIndex then
                     term.setTextColor(colors.white)
                     term.setBackgroundColor(colors.gray)
                     term.write("> " .. title .. " ")
