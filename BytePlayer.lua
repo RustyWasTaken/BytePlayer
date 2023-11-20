@@ -174,9 +174,9 @@ function display()
         end
 
         if current then
-            -- Center the song and artist below the queue
+            -- Center the song and artist above the queue
             local xPositionSong = math.floor(screenWidth / 2) - math.floor(string.len(song) / 2) + 1
-            local yPositionSong = yPositionQueue + maxDisplaySongs + 1
+            local yPositionSong = yPositionQueue - 2
             term.setCursorPos(xPositionSong, yPositionSong)
             term.write(song)
 
