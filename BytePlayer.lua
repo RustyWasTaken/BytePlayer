@@ -121,15 +121,15 @@ function music()
                         while not s.playAudio(buffer) do
                             os.pullEvent("speaker_audio_empty")
                         end
-                    end
+                    }
 
                     current = ""
                 else
-                    print("Error getting data for song: " .. song)
-                    print("Error details: " .. tostring(err))
+                    printError("Error getting data for song: " .. song)
+                    printError("Error details: " .. tostring(err))
                 end
             else
-                print("Error loading song at index " .. i)
+                printError("Error loading song at index " .. i)
             end
 
             currentSongIndex = i + 1  -- Move to the next song after playing the current one
@@ -138,6 +138,10 @@ function music()
                 currentSongIndex = 1  -- Restart playlist after reaching the end
             end
         end
+
+        sleep()
+    end
+end
 
         sleep()
     end
