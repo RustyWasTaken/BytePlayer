@@ -135,7 +135,6 @@ function display()
 
     local screenWidth, screenHeight = term.getSize()
     local maxDisplaySongs = 13  -- Maximum number of songs to display at a time
-    local scrollThreshold = 3  -- Scroll when the third song is playing
 
     while true do
         term.clear()
@@ -155,19 +154,22 @@ function display()
         local middleSongIndex = math.floor(currentSongIndex + maxDisplaySongs / 2)
 
         for i = middleSongIndex - math.floor(maxDisplaySongs / 2), middleSongIndex + math.floor(maxDisplaySongs / 2) do
-            local title = playlist[i].title .. " | " .. playlist[i].artist
-            local xPositionTitle = xPositionQueue + math.floor((string.len(queueText) - string.len(title)) / 2) + 1
-            local yPositionTitle = yPositionQueue + i - middleSongIndex + 1
-            term.setCursorPos(xPositionTitle, yPositionTitle)
+            -- Check if the index is within the valid range
+            if i >= 1 and i <= #playlist then
+                local title = playlist[i].title .. " | " .. playlist[i].artist
+                local xPositionTitle = xPositionQueue + math.floor((string.len(queueText) - string.len(title)) / 2) + 1
+                local yPositionTitle = yPositionQueue + i - middleSongIndex + 1
+                term.setCursorPos(xPositionTitle, yPositionTitle)
 
-            if i == currentSongIndex then
-                term.setTextColor(colors.white)
-                term.setBackgroundColor(colors.gray)
-                term.write("> " .. title .. " ")
-            else
-                term.setTextColor(colors.gray)
-                term.setBackgroundColor(colors.lightGray)
-                term.write("  " .. title .. " ")
+                if i == currentSongIndex then
+                    term.setTextColor(colors.white)
+                    term.setBackgroundColor(colors.gray)
+                    term.write("> " .. title .. " ")
+                else
+                    term.setTextColor(colors.gray)
+                    term.setBackgroundColor(colors.lightGray)
+                    term.write("  " .. title .. " ")
+                end
             end
         end
 
@@ -190,13 +192,9 @@ function display()
         term.setTextColor(colors.gray)  -- Reset text color for the rest of the screen
         term.setBackgroundColor(colors.lightGray)  -- Reset background color for the rest of the screen
         sleep()
-
-        -- Scroll the playlist when the third song is playing
-        if currentSongIndex >= scrollThreshold then
-            currentSongIndex = currentSongIndex - 1
-        end
     end
 end
+
 
 
 -- Main function to orchestrate everything
