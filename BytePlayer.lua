@@ -158,7 +158,7 @@ function display()
         end
 
         -- Display the queue in the center of the screen
-        local queueText = "Queue:"
+        local queueText = "Queue"
         local xPositionQueue = math.floor((screenWidth - string.len(queueText)) / 2)
         local yPositionQueue = math.floor(screenHeight / 3) - 3  -- Adjust this value to raise the queue
 
@@ -169,7 +169,7 @@ function display()
         local endDisplayIndex = currentSongIndex + maxDisplaySongs - 1
 
         for i = startDisplayIndex, endDisplayIndex do
-            local displayIndex = i - scrollOffset + 1
+            local displayIndex = i - startDisplayIndex + 1  -- Use startDisplayIndex instead of scrollOffset
 
             if displayIndex >= 1 and displayIndex <= maxDisplaySongs then
                 local title = playlist[i].title .. " | " .. playlist[i].artist
