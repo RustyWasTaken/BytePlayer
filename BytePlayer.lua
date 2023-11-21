@@ -11,7 +11,7 @@
 --            "Y88P"                                          "Y88P"                   
 -- By ImBadAtNamesLol
 
-local version = "BytePlayer 1.1.5 [Alpha]"
+local version = "BytePlayer 1.1.6 [Alpha]"
 local changelog = [[
 Changelog:
 - Queue now scrolls properly
