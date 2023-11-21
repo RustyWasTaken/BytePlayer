@@ -74,7 +74,7 @@ function playSelectedSong(selectedIndex)
         song = selected["title"]
         artist = selected["artist"]
         current = selected["url"]
-        local data = http.get(current, nil, true)
+        local data, err = http.get(current, nil, true)
         if data then
             local decoder = dfpwm.make_decoder()
             while true do
@@ -89,6 +89,9 @@ function playSelectedSong(selectedIndex)
                 end
             end
             current = ""  -- Reset the 'current' variable after playing the selected song
+        else
+            printError("Error getting data for song: " .. song)
+            printError("Error details: " .. tostring(err))
         end
     end
 end
@@ -138,17 +141,6 @@ function music()
                 currentSongIndex = 1  -- Restart playlist after reaching the end
             end
         end
-
-        sleep()
-    end
-end
-
-
-        sleep()
-    end
-end
-
-        sleep()
     end
 end
 
@@ -227,10 +219,9 @@ function display()
 
         term.setTextColor(colors.gray)  -- Reset text color for the rest of the screen
         term.setBackgroundColor(colors.lightGray)  -- Reset background color for the rest of the screen
-        sleep()
+        sleep(0.5)  -- Adjusted sleep time
     end
 end
-
 
 -- Main function to orchestrate everything
 function main()
