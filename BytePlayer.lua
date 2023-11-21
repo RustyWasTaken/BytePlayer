@@ -121,7 +121,7 @@ function music()
                         while not s.playAudio(buffer) do
                             os.pullEvent("speaker_audio_empty")
                         end
-                    }
+                    end
 
                     current = ""
                 else
@@ -142,6 +142,7 @@ function music()
         sleep()
     end
 end
+
 
         sleep()
     end
